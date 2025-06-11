@@ -1,197 +1,253 @@
-<?php 
-
+<?php
 include "database/connection-database.php";
-
 session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
+$username = $_SESSION['username'];
 
-if(!isset($_SESSION['username'])) {
-  header("Location: index.php");
-  exit();
+// Ambil data dari database
+$countRooms = (int) mysqli_fetch_assoc(mysqli_query($connection, "SELECT COUNT(*) as total FROM tbl_rooms"))['total'];
+$countRoomFacilities = (int) mysqli_fetch_assoc(mysqli_query($connection, "SELECT COUNT(*) as total FROM tbl_room_facilities"))['total'];
+$countCustomers = (int) mysqli_fetch_assoc(mysqli_query($connection, "SELECT COUNT(*) as total FROM tbl_customers"))['total'];
+$countReservations = (int) mysqli_fetch_assoc(mysqli_query($connection, "SELECT COUNT(*) as total FROM tbl_reservations"))['total'];
+
+// Ambil data sebelumnya dari session
+$prevCounts = $_SESSION['prevCounts'] ?? [
+  'rooms'        => $countRooms,
+  'facilities'   => $countRoomFacilities,
+  'customers'    => $countCustomers,
+  'reservations' => $countReservations
+];
+
+// Fungsi deteksi perubahan
+function detectChange($current, $previous) {
+  return [
+    'changed'     => $current !== $previous,
+    'increased'   => $current > $previous,
+    'decreased'   => $current < $previous,
+    'difference'  => $current - $previous
+  ];
 }
 
-$username = $_SESSION['username'];
+// Hitung perubahan untuk masing-masing data
+$roomChange        = detectChange($countRooms, $prevCounts['rooms']);
+$facilityChange    = detectChange($countRoomFacilities, $prevCounts['facilities']);
+$customerChange    = detectChange($countCustomers, $prevCounts['customers']);
+$reservationChange = detectChange($countReservations, $prevCounts['reservations']);
+
+// Simpan ulang ke session
+$_SESSION['prevCounts'] = [
+  'rooms'        => $countRooms,
+  'facilities'   => $countRoomFacilities,
+  'customers'    => $countCustomers,
+  'reservations' => $countReservations
+];
+
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link href="img/logo/logo.png" rel="icon">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link href="img/logo/logo.png" rel="icon" />
   <title>Reservasi Hotel</title>
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/ruang-admin.min.css" rel="stylesheet">
+
+  <!-- Tailwind, AlpineJS, Font Awesome, Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet" />
+
   <style>
-    .custom-dashboard-card {
-      background: linear-gradient(135deg, #f8f9fc, #e9ecef);
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-      transition: 0.3s ease;
-    }
-    .custom-dashboard-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    .custom-card-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #6c757d;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .custom-label {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #343a40;
-    }
-    .custom-value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #495057;
-      margin-top: 4px;
-    }
-    .custom-icon {
-      font-size: 2.3rem;
-      color: #6c63ff;
-    }
-    .carousel-inner {
-      height: 100vh;
-    }
-    .carousel-item {
-      height: 100vh;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .carousel-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    body { font-family: 'Nunito', sans-serif; }
+    [x-cloak] { display: none !important; }
+    .marquee-container { overflow: hidden; white-space: nowrap; }
+    .marquee-text { display: inline-block; animation: marquee 15s linear infinite; padding-left: 100%; }
+    @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
   </style>
 </head>
-
-<body id="page-top">
-  <div id="wrapper">
-    <?php include 'sidebar.php'; ?>
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <?php include 'navbar.php'; ?>
-
-        <!-- Carousel with Dashboard -->
-        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-          <div class="carousel-inner">
-            <div class="carousel-item active" style="background-image: url('img/img-banner.jpg');">
-              <h1 class="h3 mb-0 text-white text-center mt-5" style="position: relative; z-index: 10;">Dashboard</h1>
-              <div class="carousel-overlay">
-                <div class="container-fluid" id="container-wrapper">
-                  <div class="row mb-1 w-100">
-
-                    
-                    <!-- Data Kamar Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                      <div class="card h-100 custom-dashboard-card">
-                        <div class="card-body text-center">
-                          <div class="custom-card-title">Data Kamar</div>
-                          <div class="d-flex justify-content-around">
-                            <div>
-                              <div class="custom-label">Booked</div>
-                              <div class="custom-value">2</div>
-                            </div>
-                            <div>
-                              <div class="custom-label">Available</div>
-                              <div class="custom-value">4</div>
-                            </div>
-                          </div>
-                          <div class="custom-icon mt-3 text-primary">
-                            <i class="fas fa-bed"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Data Customer Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                      <div class="card h-100 custom-dashboard-card">
-                        <div class="card-body text-center">
-                          <div class="custom-card-title">Data Customer</div>
-                          <div class="custom-value">20</div>
-                          <div class="custom-icon mt-3 text-info">
-                            <i class="fas fa-user-friends"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Data User Online Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                      <div class="card h-100 custom-dashboard-card">
-                        <div class="card-body text-center">
-                          <div class="custom-card-title">Data User Online</div>
-                          <div class="custom-value">366</div>
-                          <div class="custom-icon mt-3 text-success">
-                            <i class="fas fa-signal"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Bookings Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                      <div class="card h-100 custom-dashboard-card">
-                        <div class="card-body text-center">
-                          <div class="custom-card-title">Bookings</div>
-                          <div class="custom-value">12</div>
-                          <div class="custom-icon mt-3 text-danger">
-                            <i class="fas fa-calendar-check"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
+<body class="bg-slate-100">
+  <div x-data="{ sidebarOpen: window.innerWidth > 1024 }" class="flex h-screen">
+    <aside
+      class="fixed inset-y-0 left-0 z-30 w-64 px-4 py-6 overflow-y-auto bg-slate-900 text-slate-100"
+    >
+      <!-- Brand -->
+      <a href="dashboard.php" class="flex items-center space-x-2 mb-8 px-3">
+        <img src="img/logo/logo-web.png" alt="NuRy HOTEL" class="h-20 w-30">
+        <span class="text-xl font-bold">
+          <span class="text-slate-400 font-medium">Green</span>
+        </span>
+      </a>
+      <!-- Nav items -->
+      <nav class="space-y-2">
+        <a href="dashboard.php"
+           class="flex items-center px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
+          <i class="fas fa-clock w-5"></i><span class="ml-3">Dashboard</span>
+        </a>
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Master</p>
+        <div x-data="{ open: false }" class="px-2">
+          <button @click="open = !open"
+                  class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+            <div class="flex items-center">
+              <i class="fas fa-hotel w-5"></i>
+              <span class="ml-3">Data Master Hotel</span>
             </div>
-
-            <!-- Slide 2 -->
-            <div class="carousel-item" style="background-image: url('img/img-banner2.jpg');">
-              <div class="carousel-overlay"><h1 class="text-white">Selamat Datang di Dashboard Hotel</h1></div>
-            </div>
-
-            <!-- Slide 3 -->
-            <div class="carousel-item" style="background-image: url('img/img-banner3.jpg');">
-              <div class="carousel-overlay"><h1 class="text-white">Kelola Reservasi Anda dengan Mudah</h1></div>
-            </div>
-
+            <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': open }"></i>
+          </button>
+          <div x-show="open" x-collapse class="mt-1 space-y-1 ml-6">
+            <a href="data-kamar-page.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Kamar</a>
+            <a href="data-tipe-kamar-page.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Tipe Kamar</a>
+            <a href="data-fasilitas-page.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Fasilitas</a>
+            <a href="data-room-facilities-page.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Fasilitas Kamar</a>
           </div>
         </div>
+        <!-- Data Staff -->
+         <a href="data-staff-page.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Staff</span>
+        </a>
+        <!-- Staff -->
+        <!-- Data Customer -->
+         <a href="data-customer-page.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Customer</span>
+        </a>
+        <!-- Customer -->
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Transaksi</p>
+        <a href="transaksi.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Transaksi</span>
+        </a>
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Laporan</p>
+        <div x-data="{ open: false }" class="px-2">
+          <button @click="open = !open"
+                  class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+            <div class="flex items-center">
+              <i class="fas fa-hotel w-5"></i>
+              <span class="ml-3">Data Laporan</span>
+            </div>
+            <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': open }"></i>
+          </button>
+          <div x-show="open" x-collapse class="mt-1 space-y-1 ml-6">
+            <a href="laporan-transaksi.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Transaksi</a>
+            <a href="laporan-customer.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Customer</a>
+            <ar href="laporan-kamar.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Kamar</ar>
+          </div>
+        </div>
+      </nav>
+    </aside>
 
-      </div>
-      <?php include 'footer.php'; ?>
+
+    <div class="flex flex-col flex-1 ml-64">
+      <header class="flex items-center justify-between p-4 bg-white shadow-md">
+        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 lg:hidden">
+          <i class="fas fa-bars w-6 h-6"></i>
+        </button>
+        <div class="flex-1"></div>
+        <div class="flex items-center space-x-4">
+          <span class="font-semibold text-slate-700 capitalize">
+            Halo, <?= htmlspecialchars($username) ?>
+          </span>
+          <a href="database/validation-logout.php"
+             class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+            Logout
+          </a>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT-->
+       
+      <main class="flex-1 p-6 overflow-y-auto bg-slate-200">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+    <!-- Data Kamar -->
+    <div class="relative overflow-hidden bg-white rounded-xl shadow-lg p-5">
+      <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
+      <i class="fas fa-bed absolute bottom-4 right-4 text-7xl text-slate-100 -rotate-12"></i>
+      <p class="mb-2 text-sm font-bold text-blue-500 uppercase">Data Kamar</p>
+      <p class="text-4xl font-extrabold text-slate-800"><?= $countRooms ?></p>
+      <?php if ($roomChange['changed']): ?>
+        <div class="mt-2 text-xs px-2 py-1 rounded-md overflow-hidden marquee-container 
+                    <?= $roomChange['increased'] ? 'bg-green-100 text-green-600' : ($roomChange['decreased'] ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') ?>">
+          <span class="marquee-text">
+            <?= $roomChange['increased'] ? "Ada {$roomChange['difference']} kamar baru ditambahkan!" :
+                ($roomChange['decreased'] ? "Ada " . abs($roomChange['difference']) . " kamar dihapus!" : "Data kamar diperbarui!") ?>
+          </span>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <!-- Data Fasilitas Kamar -->
+    <div class="relative overflow-hidden bg-white rounded-xl shadow-lg p-5">
+      <div class="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
+      <i class="fas fa-signal absolute bottom-4 right-4 text-7xl text-slate-100 -rotate-12"></i>
+      <p class="mb-2 text-sm font-bold text-green-500 uppercase">Data Fasilitas Kamar</p>
+      <p class="text-4xl font-extrabold text-slate-800"><?= $countRoomFacilities ?></p>
+      <?php if ($facilityChange['changed']): ?>
+        <div class="mt-2 text-xs px-2 py-1 rounded-md overflow-hidden marquee-container 
+                    <?= $facilityChange['increased'] ? 'bg-green-100 text-green-600' : ($facilityChange['decreased'] ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') ?>">
+          <span class="marquee-text">
+            <?= $facilityChange['increased'] ? "Ada {$facilityChange['difference']} fasilitas baru!" :
+                ($facilityChange['decreased'] ? "Ada " . abs($facilityChange['difference']) . " fasilitas dihapus!" : "Data fasilitas diperbarui!") ?>
+          </span>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <!-- Data Customer -->
+    <div class="relative overflow-hidden bg-white rounded-xl shadow-lg p-5">
+      <div class="absolute top-0 left-0 w-2 h-full bg-teal-500"></div>
+      <i class="fas fa-user-friends absolute bottom-4 right-4 text-7xl text-slate-100 -rotate-12"></i>
+      <p class="mb-2 text-sm font-bold text-teal-500 uppercase">Data Customer</p>
+      <p class="text-4xl font-extrabold text-slate-800"><?= $countCustomers ?></p>
+      <?php if ($customerChange['changed']): ?>
+        <div class="mt-2 text-xs px-2 py-1 rounded-md overflow-hidden marquee-container 
+                    <?= $customerChange['increased'] ? 'bg-green-100 text-green-600' : ($customerChange['decreased'] ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') ?>">
+          <span class="marquee-text">
+            <?= $customerChange['increased'] ? "Ada {$customerChange['difference']} customer baru!" :
+                ($customerChange['decreased'] ? "Ada " . abs($customerChange['difference']) . " customer dihapus!" : "Data customer diperbarui!") ?>
+          </span>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <!-- Data Reservasi -->
+    <div class="relative overflow-hidden bg-white rounded-xl shadow-lg p-5">
+      <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
+      <i class="fas fa-calendar-check absolute bottom-4 right-4 text-7xl text-slate-100 -rotate-12"></i>
+      <p class="mb-2 text-sm font-bold text-amber-500 uppercase">Reservasi</p>
+      <p class="text-4xl font-extrabold text-slate-800"><?= $countReservations ?></p>
+      <?php if ($reservationChange['changed']): ?>
+        <div class="mt-2 text-xs px-2 py-1 rounded-md overflow-hidden marquee-container 
+                    <?= $reservationChange['increased'] ? 'bg-green-100 text-green-600' : ($reservationChange['decreased'] ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700') ?>">
+          <span class="marquee-text">
+            <?= $reservationChange['increased'] ? "Ada {$reservationChange['difference']} reservasi baru!" :
+                ($reservationChange['decreased'] ? "Ada " . abs($reservationChange['difference']) . " reservasi dibatalkan!" : "Data reservasi diperbarui!") ?>
+          </span>
+        </div>
+      <?php endif; ?>
+    </div>
+
+  
+</main>
+
+
+
+      <!-- FOOTER -->
+      <footer class="p-4 mt-auto text-center text-slate-600 bg-white border-t">
+        <?php include 'footer.php'; ?>
+      </footer>
     </div>
   </div>
-
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="js/ruang-admin.min.js"></script>
-  <script src="vendor/chart.js/Chart.min.js"></script>
-  <script src="js/demo/chart-area-demo.js"></script>
 </body>
-
 </html>

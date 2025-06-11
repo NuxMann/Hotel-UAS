@@ -4,6 +4,9 @@ include "database/connection-database.php";
 $id = $_GET['id'];
 $query = mysqli_query($connection, "SELECT * FROM tbl_rooms WHERE id = $id");
 $data = mysqli_fetch_assoc($query);
+
+// Ambil semua tipe kamar
+$roomTypes = mysqli_query($connection, "SELECT * FROM tbl_room_types");
 ?>
 
 <!DOCTYPE html>
@@ -23,18 +26,29 @@ $data = mysqli_fetch_assoc($query);
       <input type="hidden" name="id" value="<?= $data['id'] ?>">
 
       <div>
+        <label class="block text-gray-700">Room Id</label>
+        <input type="text" name="room_id" value="<?= $data['room_id'] ?>" required class="w-full px-4 py-2 border rounded-md">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Nomor Kamar</label>
+        <input type="text" name="room_number" value="<?= $data['room_number'] ?>" required class="w-full px-4 py-2 border rounded-md">
+      </div>
+
+      <div>
         <label class="block text-gray-700">Tipe Kamar</label>
-        <input type="text" name="room_type" value="<?= $data['room_type'] ?>" required class="w-full px-4 py-2 border rounded-md">
+        <select name="room_type_id" required class="w-full px-4 py-2 border rounded-md">
+          <?php while ($type = mysqli_fetch_assoc($roomTypes)) : ?>
+            <option value="<?= $type['room_type_id'] ?>" <?= $type['room_type_id'] === $data['room_type_id'] ? 'selected' : '' ?>>
+              <?= $type['type_name'] ?>
+            </option>
+          <?php endwhile; ?>
+        </select>
       </div>
 
       <div>
         <label class="block text-gray-700">Deskripsi</label>
         <textarea name="description" required class="w-full px-4 py-2 border rounded-md"><?= $data['description'] ?></textarea>
-      </div>
-
-      <div>
-        <label class="block text-gray-700">Kapasitas</label>
-        <input type="number" name="capacity" value="<?= $data['capacity'] ?>" required class="w-full px-4 py-2 border rounded-md">
       </div>
 
       <div>
@@ -51,8 +65,9 @@ $data = mysqli_fetch_assoc($query);
       <div>
         <label class="block text-gray-700">Status</label>
         <select name="status" required class="w-full px-4 py-2 border rounded-md">
-          <option value="active" <?= $data['status'] == 'active' ? 'selected' : '' ?>>Aktif</option>
-          <option value="inactive" <?= $data['status'] == 'inactive' ? 'selected' : '' ?>>Tidak Aktif</option>
+          <option value="Tersedia" <?= $data['status'] === 'Tersedia' ? 'selected' : '' ?>>Tersedia</option>
+          <option value="Tidak Tersedia" <?= $data['status'] === 'Tidak Tersedia' ? 'selected' : '' ?>>Tidak Tersedia</option>
+          <option value="Maintenance" <?= $data['status'] === 'Maintenance' ? 'selected' : '' ?>>Maintenance</option>
         </select>
       </div>
 

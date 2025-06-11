@@ -1,92 +1,68 @@
-<ul class="navbar-nav sidebar sidebar accordion" id="accordionSidebar" style="background-color: green;">
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon mx-3">
-          <img src="img/logo/logo-web.png" width="120" height="120">
-        </div>
+<aside
+      class="fixed inset-y-0 left-0 z-30 w-64 px-4 py-6 overflow-y-auto bg-slate-900 text-slate-100"
+    >
+      <!-- Brand -->
+      <a href="dashboard.php" class="flex items-center space-x-2 mb-8 px-3">
+        <img src="img/logo/logo-web.png" alt="NuRy HOTEL" class="h-20 w-30">
+        <span class="text-xl font-bold">
+          <span class="text-slate-400 font-medium">Green</span>
+        </span>
       </a>
-      <hr class="sidebar-divider my-0">
-      <li class="nav-item active">
-        <a class="nav-link" href="dashboard.php">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
-      </li>
-      <hr class="sidebar-divider">
-      <div class="sidebar-heading">
-        Data Master
-      </div>
-       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBootstrap"
-          aria-expanded="true" aria-controls="collapseBootstrap">
-          <i class="far fa-fw fa-window-maximize"></i>
-          <span>Data Master Hotel</span>
+      <!-- Nav items -->
+      <nav class="space-y-2">
+        <a href="dashboard.php"
+           class="flex items-center px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
+          <i class="fas fa-clock w-5"></i><span class="ml-3">Dashboard</span>
         </a>
-        <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="data-kamar-page.php">Data Kamar</a>
-            <a class="collapse-item" href="data-staff-page.php">Data Staff</a>
-            <a class="collapse-item" href="data-customer-page.php">Data Customer</a>
-            <a class="collapse-item" href="modals.html">Modals</a>
-            <a class="collapse-item" href="popovers.html">Popovers</a>
-            <a class="collapse-item" href="progress-bar.html">Progress Bars</a>
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Master</p>
+        <div x-data="{ open: false }" class="px-2">
+          <button @click="open = !open"
+                  class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+            <div class="flex items-center">
+              <i class="fas fa-hotel w-5"></i>
+              <span class="ml-3">Data Master Hotel</span>
+            </div>
+            <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': open }"></i>
+          </button>
+          <div x-show="open" x-collapse class="mt-1 space-y-1 ml-6">
+            <a href="data-kamar-page.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Kamar</a>
+            <a href="data-tipe-kamar-page.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Tipe Kamar</a>
+            <a href="data-fasilitas-page.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Fasilitas</a>
+            <a href="data-room-facilities-page.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Fasilitas Kamar</a>
           </div>
         </div>
-      </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseForm" aria-expanded="true"
-          aria-controls="collapseForm">
-          <i class="fab fa-fw fa-wpforms"></i>
-          <span>Forms</span>
+        <!-- Data Staff -->
+         <a href="data-staff-page.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Staff</span>
         </a>
-        <div id="collapseForm" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Forms</h6>
-            <a class="collapse-item" href="form_basics.html">Form Basics</a>
-            <a class="collapse-item" href="form_advanceds.html">Form Advanceds</a>
+        <!-- Staff -->
+        <!-- Data Customer -->
+         <a href="data-customer-page.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Customer</span>
+        </a>
+        <!-- Customer -->
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Transaksi</p>
+        <a href="transaksi.php"
+           class="flex items-center px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-credit-card w-5"></i><span class="ml-3">Transaksi</span>
+        </a>
+        <p class="mt-6 mb-1 px-3 text-xs text-slate-500 uppercase">Data Laporan</p>
+        <div x-data="{ open: false }" class="px-2">
+          <button @click="open = !open"
+                  class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+            <div class="flex items-center">
+              <i class="fas fa-hotel w-5"></i>
+              <span class="ml-3">Data Laporan</span>
+            </div>
+            <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': open }"></i>
+          </button>
+          <div x-show="open" x-collapse class="mt-1 space-y-1 ml-6">
+            <a href="laporan-transaksi.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Transaksi</a>
+            <a href="laporan-customer.php"       class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Customer</a>
+            <a href="laporan-kamar.php"   class="block px-3 py-1 rounded-lg hover:bg-slate-700 transition text-sm">Laporan Kamar</a>
           </div>
         </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTable" aria-expanded="true"
-          aria-controls="collapseTable">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Tables</span>
-        </a>
-        <div id="collapseTable" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Tables</h6>
-            <a class="collapse-item" href="simple-tables.html">Simple Tables</a>
-            <a class="collapse-item" href="datatables.html">DataTables</a>
-          </div>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="ui-colors.html">
-          <i class="fas fa-fw fa-palette"></i>
-          <span>UI Colors</span>
-        </a>
-      </li> -->
-      <hr class="sidebar-divider">
-      <div class="sidebar-heading">
-        Data Transaksi
-      </div>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage" aria-expanded="true"
-          aria-controls="collapsePage">
-          <i class="fas fa-fw fa-columns"></i>
-          <span>Transaksi</span>
-        </a>
-        <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="login.html">Bookings</a>
-          </div>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Laporan Transaksi</span>
-        </a>
-      </li>
-      <hr class="sidebar-divider">
-      <div class="version" id="version-ruangadmin"></div>
-    </ul>
+      </nav>
+    </aside>

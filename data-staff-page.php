@@ -1,192 +1,99 @@
-<?php 
-
-include "database/connection-database.php";
-
+<?php
+include  "database/connection-database.php";
 session_start();
-
-if(!isset($_SESSION['username'])) {
+if (!isset($_SESSION['username'])) {
   header("Location: index.php");
   exit();
 }
-
 $username = $_SESSION['username'];
-
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" x-data="{ sidebarOpen: window.innerWidth > 1024 }">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <link href="img/logo/logo.png" rel="icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Data Staff</title>
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="css/ruang-admin.min.css" rel="stylesheet">
-  <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Google Fonts: Nunito -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet" />
 </head>
-
-<body id="page-top">
-  <div id="wrapper">
+<body class="bg-slate-100 overflow-x-hidden">
+  <div class="flex h-screen">
     <!-- Sidebar -->
-    <?php 
-      include 'sidebar.php';
-    ?>
-    <!-- Sidebar -->
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <!-- TopBar -->
-        <?php 
-        include 'navbar.php';
-        ?>
-        <!-- Topbar -->
-        <!-- Container Fluid-->
-        <div class="container-fluid" id="container-wrapper">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Data Staff</h1>
-            <ol class="breadcrumb">
-              <a href="form-staff.php">
-                <button class="btn btn-primary">Tambah Staff</button>
-              </a>
-              
-              
-            </ol>
+    <?php include 'sidebar.php'; ?>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-1 ml-64 overflow-x-hidden">
+      <!-- Navbar -->
+      <?php include 'navbar.php'; ?>
+
+      <!-- Main -->
+      <main class="flex-1 p-6 overflow-y-auto overflow-x-hidden bg-slate-200">
+        <div class="w-full px-4 lg:px-8 mx-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-semibold text-slate-700">Data Staff</h1>
+            <a href="form-staff.php" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
+              <i class="fas fa-plus mr-2"></i>Tambah Staff
+            </a>
           </div>
 
-          <!-- Row -->
-          <div class="row">
-            <!-- Datatables -->
-            <div class="col-lg-12">
-              <div class="card mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Data Staff</h6>
-                </div>
-                <div class="table-responsive p-3">
-                  <table class="table align-items-center table-flush" id="dataTable">
-                    <thead class="thead-light" style="white-space: nowrap; text-align: center; vertical-align: middle;">
-                      <tr>
-                        <th>No</th>
-                        <th>Staff ID</th>
-                        <th>Nama Lengkap</th>
-                        <th>Gender</th>
-                        <th>Jabatan</th>
-                        <th>No HP</th>
-                        <th>Email</th>
-                        <th>Alamat</th>
-                        <th>Tempat Lahir</th>
-                        <th>Tanggal Lahir</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>Aksi</th>
-                      </tr>
-                    </thead>
-
-                    <tbody class="text-center">
-                      <?php
-                      include "database/connection-database.php";
-
-                      $no = 1;
-                      $result = mysqli_query($connection, "SELECT * FROM tbl_staff");
-
-                      $staff = [];
-                      while ($row = mysqli_fetch_assoc($result)) {
-                          $staff[] = $row;
-                      }
-
-                      foreach ($staff as $row) {
-                      ?>
-                      <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= htmlspecialchars($row['staff_id']) ?></td>
-                        <td><?= htmlspecialchars($row['full_name']) ?></td>
-                        <td><?= $row['gender'] ?></td>
-                        <td><?= $row['position'] ?></td>
-                        <td><?= $row['phone'] ?></td>
-                        <td><?= $row['email'] ?></td>
-                        <td><?= $row['address'] ?></td>
-                        <td><?= $row['birth_place'] ?></td>
-                        <td><?= $row['birth_date'] ?></td>
-                        <td><?= $row['created_at'] ?></td>
-                        <td><?= $row['updated_at'] ?></td>
-                        <td>
-                          <a href="edit-staff.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                          <a href="database/Staff/validation-delete-staff.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="btn btn-sm btn-danger mt-2">Hapus</a>
-                        </td>
-                      </tr>
-                      <?php } ?>
-                      </tbody>
-
-
-                  </table>
-                </div>
-              </div>
-            </div>
-            
+          <!-- Table Container -->
+          <div class="overflow-x-auto bg-white rounded-lg shadow">
+            <table class="min-w-full table-auto divide-y divide-gray-200">
+              <thead class="bg-slate-800">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">No</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Staff ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Nama</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Email</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Username</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Role</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Created At</th>
+                  <th class="px-4 py-3 text-center text-xs font-medium text-slate-100 uppercase">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <?php
+                $no = 1;
+                $query = mysqli_query($connection, "SELECT * FROM tbl_staff ORDER BY created_at ASC");
+                while ($row = mysqli_fetch_assoc($query)):
+                ?>
+                <tr>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= $no++ ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['staff_id']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['full_name']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['email']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['username']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['role']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= $row['created_at'] ?></td>
+                  <td class="px-4 py-2 text-center space-x-2 flex justify-center">
+                    <a href="edit-staff.php?id=<?= $row['id'] ?>" class="inline-flex items-center justify-center p-2 text-yellow-600 bg-yellow-100 rounded-full hover:bg-yellow-200" title="Edit">
+                      <i class="fas fa-pen-to-square"></i>
+                    </a>
+                    <a href="database/Staff/validation-delete-staff.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus data ini?')" class="inline-flex items-center justify-center p-2 text-red-600 bg-red-100 rounded-full hover:bg-red-200" title="Hapus">
+                      <i class="fas fa-trash-can"></i>
+                    </a>
+                  </td>
+                </tr>
+                <?php endwhile; ?>
+              </tbody>
+            </table>
           </div>
-          <!--Row-->
-
-          
-          
-
-          <!-- Modal Logout -->
-          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabelLogout">Ohh No!</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <p>Are you sure you want to logout?</p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                  <a href="login.html" class="btn btn-primary">Logout</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-        <!---Container Fluid-->
-      </div>
+      </main>
 
       <!-- Footer -->
-      <?php 
-      include 'footer.php';
-      ?>
-      <!-- Footer -->
+      <footer class="p-4 text-center text-slate-600 bg-white border-t">
+        <?php include 'footer.php'; ?>
+      </footer>
     </div>
   </div>
-
-  <!-- Scroll to top -->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="js/ruang-admin.min.js"></script>
-  <!-- Page level plugins -->
-  <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-  <!-- Page level custom scripts -->
-  <script>
-    $(document).ready(function () {
-      $('#dataTable').DataTable(); // ID From dataTable 
-      $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-    });
-  </script>
-
 </body>
-
 </html>

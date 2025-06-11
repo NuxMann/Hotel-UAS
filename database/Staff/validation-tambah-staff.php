@@ -2,29 +2,46 @@
 include "../connection-database.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
-    $staff_id    = trim($_POST['staff_id']);
-    $full_name   = trim($_POST['full_name']);
-    $gender      = $_POST['gender'];
-    $position    = trim($_POST['position']);
-    $phone       = trim($_POST['phone']);
-    $email       = trim($_POST['email']);
-    $address     = trim($_POST['address']);
-    $birth_place = trim($_POST['birth_place']);
-    $birth_date  = $_POST['birth_date'];
+    // Ambil dan sanitasi data dari form
+    $staff_id  = trim($_POST['staff_id']);
+    $full_name = trim($_POST['full_name']);
+    $email     = trim($_POST['email']);
+    $username  = trim($_POST['username']);
+    $password  = trim($_POST['password']);
+    $role      = trim($_POST['role']);
+
+    // Validasi email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<script>alert('Format email tidak valid!'); window.history.back();</script>";
+        exit;
+    }
+
+    // Validasi panjang password minimal 6 karakter
+    if (strlen($password) < 3) {
+        echo "<script>alert('Password minimal 6 karakter!'); window.history.back();</script>";
+        exit;
+    }
+
+    // Hash password sebelum simpan
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Simpan ke database
     $stmt = $connection->prepare("INSERT INTO tbl_staff 
-        (staff_id, full_name, gender, position, phone, email, address, birth_place, birth_date, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())");
+        (staff_id, full_name, email, username, password, role, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, NOW())");
 
-    $stmt->bind_param("sssssssss", 
-        $staff_id, $full_name, $gender, $position, $phone, $email, $address, $birth_place, $birth_date);
+    if (!$stmt) {
+        echo "<script>alert('Gagal menyiapkan query!'); window.history.back();</script>";
+        exit;
+    }
+
+    $stmt->bind_param("ssssss", 
+        $staff_id, $full_name, $email, $username, $hashedPassword, $role);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Data staff berhasil disimpan!'); window.location.href='../../data-staff-page.php';</script>";
+        echo "<script>alert('✅ Data staff berhasil disimpan!'); window.location.href='../../data-staff-page.php';</script>";
     } else {
-        echo "<script>alert('Gagal menyimpan data staff: " . $stmt->error . "'); window.history.back();</script>";
+        echo "<script>alert('❌ Gagal menyimpan data staff: " . $stmt->error . "'); window.history.back();</script>";
     }
 
     $stmt->close();
@@ -33,4 +50,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: ../../form-staff.php");
     exit;
 }
-?>

@@ -12,26 +12,31 @@
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Form Tambah Customer</h2>
 
     <form action="database/Customer/validation-tambah-customer.php" method="POST" class="space-y-4">
-      <input type="hidden" name="id" value="<?= $_GET['id'] ?? '' ?>">
+      <!-- ID disembunyikan, biasanya untuk update. Di tambah tidak dibutuhkan -->
+      <!-- Jika kamu ingin input manual ID customer, bisa aktifkan di bawah -->
 
       <div>
-        <label class="block text-gray-700">Nama Lengkap</label>
-        <input type="text" name="full_name" required class="w-full px-4 py-2 border rounded-md" value="<?= $_GET['full_name'] ?? '' ?>">
+        <label class="block text-gray-700">Customer ID</label>
+        <input type="text" name="customer_id" required class="w-full px-4 py-2 border rounded-md" 
+               value="<?= $_GET['customer_id'] ?? '' ?>">
       </div>
 
       <div>
-        <label class="block text-gray-700">Nomor Identitas (KTP/SIM)</label>
-        <input type="text" name="identity_no" required class="w-full px-4 py-2 border rounded-md" value="<?= $_GET['identity_no'] ?? '' ?>">
+        <label class="block text-gray-700">Nama Lengkap</label>
+        <input type="text" name="full_name" required class="w-full px-4 py-2 border rounded-md" 
+               value="<?= $_GET['full_name'] ?? '' ?>">
       </div>
 
       <div>
         <label class="block text-gray-700">Email</label>
-        <input type="email" name="email" required class="w-full px-4 py-2 border rounded-md" value="<?= $_GET['email'] ?? '' ?>">
+        <input type="email" name="email" required class="w-full px-4 py-2 border rounded-md" 
+               value="<?= $_GET['email'] ?? '' ?>">
       </div>
 
       <div>
         <label class="block text-gray-700">No HP</label>
-        <input type="text" name="phone" required class="w-full px-4 py-2 border rounded-md" value="<?= $_GET['phone'] ?? '' ?>">
+        <input type="text" name="phone" required class="w-full px-4 py-2 border rounded-md" 
+               value="<?= $_GET['phone'] ?? '' ?>">
       </div>
 
       <div>

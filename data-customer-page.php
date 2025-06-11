@@ -1,135 +1,103 @@
-<?php  
-
+<?php
 include "database/connection-database.php";
-
 session_start();
 
-if(!isset($_SESSION['username'])) {
+if (!isset($_SESSION['username'])) {
   header("Location: index.php");
   exit();
 }
 
 $username = $_SESSION['username'];
-
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" x-data="{ sidebarOpen: window.innerWidth > 1024 }">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link href="img/logo/logo.png" rel="icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Data Customers</title>
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="css/ruang-admin.min.css" rel="stylesheet">
-  <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Google Fonts: Nunito -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet" />
 </head>
-
-<body id="page-top">
-  <div id="wrapper">
+<body class="bg-slate-100 overflow-x-hidden">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
     <?php include 'sidebar.php'; ?>
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <?php include 'navbar.php'; ?>
-        <div class="container-fluid" id="container-wrapper">
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Data Customers</h1>
-            <ol class="breadcrumb">
-              <a href="form-customer.php"><button class="btn btn-primary">Tambah Customer</button></a>
-            </ol>
+
+    <!-- Content -->
+    <div class="flex flex-col flex-1 ml-64 overflow-x-hidden">
+      <!-- Navbar -->
+      <?php include 'navbar.php'; ?>
+
+      <!-- Main -->
+      <main class="flex-1 p-6 overflow-y-auto overflow-x-hidden bg-slate-200">
+        <div class="w-full px-4 lg:px-8 mx-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-semibold text-slate-700">Data Customers</h1>
+            <a href="form-customer.php" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
+              <i class="fas fa-plus mr-2"></i>Tambah Customer
+            </a>
           </div>
 
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Data Customers</h6>
-                </div>
-                <div class="table-responsive p-3">
-                  <table class="table align-items-center table-flush" id="dataTable">
-                    <thead class="thead-light text-center">
-                      <tr>
-                        <th>No</th>
-                        <th>Nama Lengkap</th>
-                        <th>No Identitas</th>
-                        <th>Email</th>
-                        <th>No HP</th>
-                        <th>Alamat</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody class="text-center">
-                      <?php
-                      $no = 1;
-                      $result = mysqli_query($connection, "SELECT * FROM tbl_customers");
-                      while ($row = mysqli_fetch_assoc($result)) {
-                      ?>
-                      <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= htmlspecialchars($row['full_name']) ?></td>
-                        <td><?= htmlspecialchars($row['identity_no']) ?></td>
-                        <td><?= htmlspecialchars($row['email']) ?></td>
-                        <td><?= htmlspecialchars($row['phone']) ?></td>
-                        <td><?= htmlspecialchars($row['address']) ?></td>
-                        <td><?= $row['created_at'] ?></td>
-                        <td><?= $row['updated_at'] ?></td>
-                        <td>
-                          <a href="edit-customer.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                          <a href="database/Customer/validation-delete-customer.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="btn btn-sm btn-danger mt-2">Hapus</a>
-                        </td>
-                      </tr>
-                      <?php } ?>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+          <!-- Table Container -->
+          <div class="overflow-x-auto bg-white rounded-lg shadow">
+            <table class="min-w-full table-auto divide-y divide-gray-200">
+              <thead class="bg-slate-800">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">No</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Customer ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Nama Lengkap</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Email</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">No HP</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Alamat</th>
+                  <th class="px-4 py-3 hidden md:table-cell text-left text-xs font-medium text-slate-100 uppercase">Created At</th>
+                  <th class="px-4 py-3 hidden lg:table-cell text-left text-xs font-medium text-slate-100 uppercase">Updated At</th>
+                  <th class="px-4 py-3 text-center text-xs font-medium text-slate-100 uppercase">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <?php
+                $no = 1;
+                $result = mysqli_query($connection, "SELECT * FROM tbl_customers ORDER BY created_at ASC");
+                while ($row = mysqli_fetch_assoc($result)):
+                ?>
+                <tr>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= $no++ ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['customer_id']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['full_name']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['email']) ?></td>
+                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['phone']) ?></td>
+                  <td class="px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-600"><?= htmlspecialchars($row['address']) ?></td>
+                  <td class="px-4 py-2 text-sm text-slate-500 hidden md:table-cell"><?= $row['created_at'] ?></td>
+                  <td class="px-4 py-2 text-sm text-slate-500 hidden lg:table-cell"><?= !empty($row['updated_at']) ? $row['updated_at'] : 'Belum pernah diupdate' ?></td>
+                  <td class="px-4 py-2 text-center space-x-2 flex justify-center">
+                    <a href="edit-customer.php?id=<?= $row['id'] ?>" class="inline-flex items-center justify-center p-2 text-yellow-600 bg-yellow-100 rounded-full hover:bg-yellow-200" title="Edit">
+                      <i class="fas fa-pen-to-square"></i>
+                    </a>
+                    <a href="database/Customer/validation-delete-customer.php?id=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')" class="inline-flex items-center justify-center p-2 text-red-600 bg-red-100 rounded-full hover:bg-red-200" title="Hapus">
+                      <i class="fas fa-trash-can"></i>
+                    </a>
+                  </td>
+                </tr>
+                <?php endwhile; ?>
+              </tbody>
+            </table>
           </div>
-
-          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabelLogout">Konfirmasi Logout</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">Apakah Anda yakin ingin logout?</div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batal</button>
-                  <a href="login.html" class="btn btn-primary">Logout</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-      </div>
-      <?php include 'footer.php'; ?>
+      </main>
+
+      <!-- Footer -->
+      <footer class="p-4 text-center text-slate-600 bg-white border-t">
+        <?php include 'footer.php'; ?>
+      </footer>
     </div>
   </div>
-
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-  <script src="js/ruang-admin.min.js"></script>
-  <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      $('#dataTable').DataTable();
-    });
-  </script>
-
 </body>
 </html>
