@@ -13,6 +13,7 @@ $rooms = mysqli_query($connection, "
   SELECT r.room_id, r.room_number, t.type_name
   FROM tbl_rooms r
   JOIN tbl_room_types t ON r.room_type_id = t.room_type_id
+  WHERE r.status = 'Tersedia'
   ORDER BY r.room_number
 ");
 $customers = mysqli_query($connection, "
@@ -20,6 +21,11 @@ $customers = mysqli_query($connection, "
   FROM tbl_customers
   ORDER BY full_name
 ");
+// Staff
+$staffs = mysqli_query($connection, "
+  SELECT staff_id, full_name FROM tbl_staff ORDER BY full_name
+");
+
 // Ambil data fasilitas
 $facRes = mysqli_query($connection, "
   SELECT
@@ -45,6 +51,7 @@ while ($f = mysqli_fetch_assoc($facRes)) {
   <title>Transaksi Reservasi</title>
  <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -77,6 +84,20 @@ while ($f = mysqli_fetch_assoc($facRes)) {
                 <?php endwhile; ?>
               </select>
             </div>
+
+            <!-- Pilih Staff -->
+            <div>
+              <label class="block text-gray-700 font-medium mb-1">Pilih Staff</label>
+              <select name="staff_id" required class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:ring-2 focus:ring-indigo-500">
+                <option value="">-- Pilih Staff --</option>
+                <?php while ($s = mysqli_fetch_assoc($staffs)): ?>
+                  <option value="<?= htmlspecialchars($s['staff_id']) ?>">
+                    <?= htmlspecialchars($s['staff_id'] . ' | ' . $s['full_name']) ?>
+                  </option>
+                <?php endwhile; ?>
+              </select>
+            </div>
+
 
             <!-- Pilih Kamar -->
             <div>

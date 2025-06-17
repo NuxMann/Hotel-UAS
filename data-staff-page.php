@@ -1,5 +1,5 @@
 <?php
-include  "database/connection-database.php";
+include "database/connection-database.php";
 session_start();
 if (!isset($_SESSION['username'])) {
   header("Location: index.php");
@@ -14,29 +14,21 @@ $username = $_SESSION['username'];
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Data Staff</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <!-- Font Awesome -->
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Google Fonts: Nunito -->
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet" />
 </head>
 <body class="bg-slate-100 overflow-x-hidden">
   <div class="flex h-screen">
-    <!-- Sidebar -->
     <?php include 'sidebar.php'; ?>
 
-    <!-- Content -->
     <div class="flex flex-col flex-1 ml-64 overflow-x-hidden">
-      <!-- Navbar -->
       <?php include 'navbar.php'; ?>
 
-      <!-- Main -->
       <main class="flex-1 p-6 overflow-y-auto overflow-x-hidden bg-slate-200">
         <div class="w-full px-4 lg:px-8 mx-auto">
-          <!-- Header -->
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-semibold text-slate-700">Data Staff</h1>
             <a href="form-staff.php" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
@@ -44,7 +36,6 @@ $username = $_SESSION['username'];
             </a>
           </div>
 
-          <!-- Table Container -->
           <div class="overflow-x-auto bg-white rounded-lg shadow">
             <table class="min-w-full table-auto divide-y divide-gray-200">
               <thead class="bg-slate-800">
@@ -53,9 +44,13 @@ $username = $_SESSION['username'];
                   <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Staff ID</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Nama</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Email</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Username</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Role</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Tempat Lahir</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Tanggal Lahir</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Alamat</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">No HP</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Created At</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-slate-100 uppercase">Updated At</th>
                   <th class="px-4 py-3 text-center text-xs font-medium text-slate-100 uppercase">Aksi</th>
                 </tr>
               </thead>
@@ -66,13 +61,17 @@ $username = $_SESSION['username'];
                 while ($row = mysqli_fetch_assoc($query)):
                 ?>
                 <tr>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= $no++ ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['staff_id']) ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['full_name']) ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['email']) ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['username']) ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= htmlspecialchars($row['role']) ?></td>
-                  <td class="px-4 py-2 whitespace-nowrap"><?= $row['created_at'] ?></td>
+                  <td class="px-4 py-2"><?= $no++ ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['staff_id']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['full_name']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['email']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['role']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['birth_place']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['birth_date']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['address']) ?></td>
+                  <td class="px-4 py-2"><?= htmlspecialchars($row['phone_number']) ?></td>
+                  <td class="px-4 py-2"><?= $row['created_at'] ?></td>
+                  <td class="px-4 py-2"><?= $row['updated_at'] ?? '-' ?></td>
                   <td class="px-4 py-2 text-center space-x-2 flex justify-center">
                     <a href="edit-staff.php?id=<?= $row['id'] ?>" class="inline-flex items-center justify-center p-2 text-yellow-600 bg-yellow-100 rounded-full hover:bg-yellow-200" title="Edit">
                       <i class="fas fa-pen-to-square"></i>
@@ -89,7 +88,6 @@ $username = $_SESSION['username'];
         </div>
       </main>
 
-      <!-- Footer -->
       <footer class="p-4 text-center text-slate-600 bg-white border-t">
         <?php include 'footer.php'; ?>
       </footer>

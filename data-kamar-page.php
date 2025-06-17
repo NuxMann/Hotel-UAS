@@ -7,13 +7,15 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link href="img/logo/logo.png" rel="icon" />
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
   <title>Data Kamar - NuRy HOTEL</title>
 
   <!-- Tailwind, AlpineJS, Font Awesome, Google Fonts -->
@@ -23,6 +25,8 @@ $username = $_SESSION['username'];
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
 </head>
 <body class="bg-slate-100 overflow-x-hidden">
   <div x-data="{ sidebarOpen: window.innerWidth > 1024 }" class="flex h-screen">
@@ -47,6 +51,16 @@ $username = $_SESSION['username'];
 
           <!-- Table Container -->
           <div class="overflow-x-auto bg-white rounded-lg shadow">
+            <?php if(isset($_GET['refreshed'])): ?>
+                <div class="p-4 mb-4 text-green-700 bg-green-100 rounded">
+                  Status kamar berhasil di‐refresh ke <strong>Available</strong>.
+                </div>
+              <?php endif; ?>
+              <?php if(isset($_GET['error'])): ?>
+                <div class="p-4 mb-4 text-red-700 bg-red-100 rounded">
+                  Gagal refresh status kamar.
+                </div>
+              <?php endif; ?>
             <table class="min-w-full table-auto divide-y divide-gray-200">
               <thead class="bg-slate-800">
                 <tr>
@@ -85,24 +99,50 @@ $username = $_SESSION['username'];
                     <img src="img/<?= htmlspecialchars($row['image']) ?>" class="h-16 w-20 object-cover rounded-md" alt="Room Image">
                   </td>
                   <td class="px-4 py-2 whitespace-nowrap">
-                    <?php if (strtolower($row['status']) === 'available'): ?>
-                      <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full bg-green-100 text-green-800">Available</span>
+                    <?php if ($row['status'] === 'Tersedia'): ?>
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full bg-green-100 text-green-800">
+                        Tersedia
+                      </span>
                     <?php else: ?>
-                      <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full bg-red-100 text-red-800"><?= htmlspecialchars(ucfirst($row['status'])) ?></span>
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold leading-5 rounded-full bg-red-100 text-red-800">
+                        Tidak Tersedia
+                      </span>
                     <?php endif; ?>
                   </td>
+
                   <td class="px-4 py-2 text-sm text-slate-500 hidden md:table-cell"><?= $row['created_at'] ?></td>
                   <td class="px-4 py-2 text-sm text-slate-500 hidden lg:table-cell"><?= $row['updated_at'] ?></td>
-                  <td class="px-4 py-2 text-center space-x-2 flex justify-center">
-                    <a href="edit-room.php?id=<?= $row['id'] ?>" class="inline-flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200" title="Edit">
+                  <td class="px-4 py-2 text-center flex items-center justify-center space-x-2">
+                    <?php if ($row['status'] !== 'Tersedia'): ?>
+                      <!-- Tombol Refresh hanya saat status bukan Tersedia -->
+                      <a 
+                        href="database/Kamar/validation-refresh-kamar.php?id=<?= $row['id'] ?>"
+                        onclick="return confirm('Set status kamar ini menjadi Tersedia?')"
+                        class="inline-flex items-center justify-center p-2 text-green-600 bg-green-100 rounded-full hover:bg-green-200"
+                        title="Refresh Status">
+                        <i class="fas fa-sync-alt"></i>
+                      </a>
+                    <?php endif; ?>
+
+                    <!-- Tombol Edit -->
+                    <a 
+                      href="edit-room.php?id=<?= $row['id'] ?>" 
+                      class="inline-flex items-center justify-center p-2 text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200" 
+                      title="Edit">
                       <i class="fas fa-pen-to-square"></i>
                     </a>
-                    <a href="database/Kamar/validation-delete-kamar.php?id=<?= $row['id'] ?>"
-                       onclick="return confirm('Yakin hapus?')"
-                       class="inline-flex items-center justify-center p-2 text-red-600 bg-red-100 rounded-full hover:bg-red-200" title="Delete">
+
+                    <!-- Tombol Delete -->
+                    <a 
+                      href="database/Kamar/validation-delete-kamar.php?id=<?= $row['id'] ?>" 
+                      onclick="return confirm('Yakin hapus?')" 
+                      class="inline-flex items-center justify-center p-2 text-red-600 bg-red-100 rounded-full hover:bg-red-200" 
+                      title="Delete">
                       <i class="fas fa-trash-can"></i>
                     </a>
                   </td>
+
+
                 </tr>
                 <?php endwhile; ?>
               </tbody>

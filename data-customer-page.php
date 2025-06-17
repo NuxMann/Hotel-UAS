@@ -24,6 +24,8 @@ $username = $_SESSION['username'];
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Google Fonts: Nunito -->
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet" />
+
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
 </head>
 <body class="bg-slate-100 overflow-x-hidden">
   <div class="flex h-screen">

@@ -1,7 +1,6 @@
 <?php
 // database/Reservation/validation-tambah-reservation.php
 include "../connection-database.php";
-session_start();
 
 // 1) Pastikan method POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -10,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // 2) Ambil data dari form
-// Customer
 $customer_id = $_POST['customer_id'];
 
 // Room ID bisa saja dikirim dalam format "ROOM003||003"
@@ -27,26 +25,25 @@ if (isset($_POST['facility_id']) && strpos($_POST['facility_id'], '||') !== fals
     $facility_id = $_POST['facility_id'] ?? '';
 }
 
-// Tanggal checkin/checkout & total price
+// Tanggal dan harga
 $check_in    = $_POST['checkin'];
 $check_out   = $_POST['checkout'];
 $total_price = (float) $_POST['total_price'];
 
-// 3) Ambil staff_id berdasar username session
-$stmt = $connection->prepare("SELECT staff_id FROM tbl_staff WHERE username = ?");
-$stmt->bind_param('s', $_SESSION['username']);
-$stmt->execute();
-$stmt->bind_result($staff_id);
-$stmt->fetch();
-$stmt->close();
+// 3) Ambil staff_id langsung dari form
+$staff_id = $_POST['staff_id'] ?? null;
 
-// 4) Generate reservation_id unik per bulan
+if (!$staff_id) {
+    echo "<script>alert('❌ Staff belum dipilih!'); window.history.back();</script>";
+    exit;
+}
+
+// 4) Generate reservation_id unik
 date_default_timezone_set('Asia/Jakarta');
 $month = date('m');
 $year2 = date('y');
 $sqlCount = "
-  SELECT COUNT(*)
-  FROM tbl_reservations
+  SELECT COUNT(*) FROM tbl_reservations
   WHERE MONTH(reservation_date) = MONTH(CURDATE())
     AND YEAR(reservation_date) = YEAR(CURDATE())
 ";
@@ -59,28 +56,34 @@ $status = 'Confirmed';
 
 // 6) Simpan ke tbl_reservations
 $insertSql = "
-  INSERT INTO tbl_reservations
-    (reservation_id,
-     customer_id,
-     room_id,
-     room_facility_id,
-     staff_id,
-     check_in_date,
-     check_out_date,
-     reservation_date,
-     status,
-     total_price
-    )
-  VALUES
-    (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
+  INSERT INTO tbl_reservations (
+    reservation_id,
+    customer_id,
+    room_id,
+    room_facility_id,
+    staff_id,
+    check_in_date,
+    check_out_date,
+    reservation_date,
+    status,
+    total_price
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
 ";
-
-$stmt = $connection->prepare($insertSql);
-if (!$stmt) {
-    die("Prepare statement failed: " . $connection->error);
-}
-
-// 7×s + 1×d (double)
+// 6) Simpan ke tbl_reservations
+$stmt = $connection->prepare("
+  INSERT INTO tbl_reservations (
+    reservation_id,
+    customer_id,
+    room_id,
+    room_facility_id,
+    staff_id,
+    check_in_date,
+    check_out_date,
+    reservation_date,
+    status,
+    total_price
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
+");
 $stmt->bind_param(
     'ssssssssd',
     $reservation_id,
@@ -99,6 +102,12 @@ if (!$stmt->execute()) {
 }
 $stmt->close();
 
-// 7) Redirect kembali ke list reservasi
+// **7) Tandai kamar jadi Tidak Tersedia**
+$upd = $connection->prepare("UPDATE tbl_rooms SET status = 'Tidak Tersedia' WHERE room_id = ?");
+$upd->bind_param("s", $room_id);
+$upd->execute();
+$upd->close();
+
+// 8) Redirect kembali ke halaman list
 header('Location: ../../data-reservasi-page.php?success=1');
 exit;

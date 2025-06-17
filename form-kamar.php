@@ -15,6 +15,9 @@ $roomTypes = mysqli_query($connection, "SELECT * FROM tbl_room_types");
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
@@ -28,6 +31,13 @@ $roomTypes = mysqli_query($connection, "SELECT * FROM tbl_room_types");
   </template>
 
   <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xl">
+    <div class="text-left">
+      <a href="dashboard.php" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Kembali
+      </a>
+    </div>
+
     <h2 class="text-3xl font-semibold text-gray-800 text-center mb-6">Form Tambah Kamar</h2>
     
     <form

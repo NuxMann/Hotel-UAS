@@ -8,10 +8,35 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-lg">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Form Registrasi</h2>
-    
+  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-xl">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Form Registrasi Pengguna</h2>
+
     <form action="database/validation-register.php" method="POST" class="space-y-4">
+
+      <div>
+        <label class="block text-gray-700">Nama Lengkap</label>
+        <input type="text" name="full_name" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Tempat Lahir</label>
+        <input type="text" name="tempat_lahir" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Tanggal Lahir</label>
+        <input type="date" name="tanggal_lahir" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+
+      <div>
+        <label class="block text-gray-700">Alamat</label>
+        <textarea name="alamat" rows="2" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-gray-700">No HP</label>
+        <input type="text" name="no_hp" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
 
       <div>
         <label class="block text-gray-700">Username</label>

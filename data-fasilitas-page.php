@@ -15,7 +15,7 @@ $username = $_SESSION['username'];
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link href="img/logo/logo.png" rel="icon" />
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />  
   <title>Data Fasilitas</title>
 
   <!-- Tailwind, AlpineJS, Font Awesome, Google Fonts -->

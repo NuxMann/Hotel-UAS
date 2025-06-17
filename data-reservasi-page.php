@@ -14,6 +14,7 @@ $username = $_SESSION['username'];
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Data Reservasi</title>
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet"

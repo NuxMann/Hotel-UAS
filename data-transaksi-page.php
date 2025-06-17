@@ -16,6 +16,7 @@ $username = $_SESSION['username'];
   <meta charset="UTF-8">
   <title>Data Transaksi Reservasi</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link sizes="64x64" href="img/logo/logo-web.png" rel="icon" />
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
